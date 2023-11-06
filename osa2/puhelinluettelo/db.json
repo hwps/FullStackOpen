@@ -1,0 +1,24 @@
+{
+  "persons": [
+    {
+      "name": "Arto Hellas",
+      "number": "040-123456",
+      "id": 1
+    },
+    {
+      "name": "Apsta Aapo",
+      "number": "1234",
+      "id": 5
+    },
+    {
+      "name": "Pentti Puntti",
+      "number": "050-545 1234",
+      "id": 6
+    },
+    {
+      "name": "Virtanen",
+      "number": "040-11223344",
+      "id": 7
+    }
+  ]
+}
