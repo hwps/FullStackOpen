@@ -1,4 +1,4 @@
-FullStackOpen MOOC assignment 1.1 - 1.5
+FullStackOpen MOOC assignment 1.6 - 1.11
 
 Run with
 ``` 
