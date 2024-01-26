@@ -110,7 +110,7 @@ const App = () => {
             setContacts(contacts.map(contact => contact.id !== changedContact.id ? contact : response.data))
             displayNotification(`Number updated for ${response.data.name}`, 'info')
           })
-          .catch(error => displayNotification(`Name ${changedContact.name} not found`, 'error'))
+          .catch(error => displayNotification(`Name ${changedContact.name} not found: `, error))
         }
       }
     else {

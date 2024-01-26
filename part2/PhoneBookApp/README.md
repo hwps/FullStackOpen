@@ -9,3 +9,5 @@ $ npm run dev```
 Run development server with
 ````
 $ npm run server```
+
+after changing serverUrl from 'api/entries' to 'http://localhost:3001/entries' in src/services/contacts.jsx
