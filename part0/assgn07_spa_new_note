@@ -1,0 +1,12 @@
+```mermaid
+sequenceDiagram
+    participant browser
+    participant server
+    
+    Note right of browser: When the Save button is pressed, the callback registered in spa.js will fire. The browser then creates a new note from the value of the form and the current date and adds it to the end of its list of notes. It will then re-render the page with all notes including the new one, and finally send the new note to the server.
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa ... {content: "Another new note", date: "2024-01-31T10:23:57.914Z"}
+    activate server
+    server-->>browser: HTTP/1.1 201 Created ... {"message":"note created"}
+    deactivate server
+```
