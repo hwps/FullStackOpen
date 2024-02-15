@@ -1,4 +1,18 @@
+// Dummy data for tests
+
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+
+const users = [
+  {
+    "_id": "65ce015448dcaecbf1f3785b",
+    "username":"unique",
+    "name":"Unique Name",
+    "passwordHash":"$2b$12$pWtAUw6wwoU0dsGgqLaZ4e9ous/TMWKf6GwkxqcAO9FR4UqrJtTKG",
+    "blogs":[],
+  }
+]
 
 const blogs = [
     {
@@ -40,10 +54,16 @@ const blogs = [
 ]
 
 const blogCount = blogs.length
+const userCount = users.length
 
 const blogsInDB = async () => {
     const blogs = await Blog.find({})
     return blogs.map(blog => blog.toJSON())
 }
 
-module.exports = { blogs, blogCount, blogsInDB }
+const usersInDB = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
+module.exports = { blogs, users, blogCount, userCount, blogsInDB, usersInDB }

@@ -11,7 +11,7 @@ usersRouter.post('/', async (req, res) => {
     const body = req.body
 
     if (!body.username)
-        return res.status(400).json( {error: 'you must provide a username'} )
+        return res.status(400).json( {error: 'you must provide a username'} ) // 400 Bad Request
 
     if (!body.password || body.password.length < 3)
         return res.status(400).json( {error: 'you must provide a password of at least 3 characters'} ) // 400 Bad Request
@@ -30,7 +30,7 @@ usersRouter.post('/', async (req, res) => {
         })
         
         const savedUser = await user.save()
-        res.status(201).json(savedUser)
+        res.status(201).json(savedUser) // 201 Created
         
     }
 })
