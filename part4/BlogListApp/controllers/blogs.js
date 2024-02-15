@@ -7,13 +7,6 @@ blogsRouter.get('/', async (request, response) => {
   
   const blogs = await Blog.find({}).populate('user')
   if (blogs) response.json(blogs)
-  /*
-  Blog
-  .find({})
-  .then(blogs => {
-    response.json(blogs)
-  })
-  */
 })
 
 blogsRouter.post('/', async (request, response) => {
@@ -32,7 +25,6 @@ blogsRouter.post('/', async (request, response) => {
       likes: body.likes || 0,
       user: user._id
     })
-    //if (!request.body.likes) request.body['likes'] = 0
     
     const newBlog = await blog.save()
     if (newBlog) {
@@ -40,17 +32,6 @@ blogsRouter.post('/', async (request, response) => {
       await user.save()
       response.status(201).json(newBlog) 
     }
-    //new Blog(request.body) // TO DO: fill out the actual fields instead of just copypasting the request body, see PUT request
-    
-    //blog.save().then(result => response.status(201).json(result))
-    
-    /* 
-    blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
-    */
   }
 })
 
