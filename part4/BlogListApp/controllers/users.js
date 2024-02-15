@@ -10,8 +10,14 @@ usersRouter.get('/', async (req, res) => {
 usersRouter.post('/', async (req, res) => {    
     const body = req.body
 
+    if (!body.username)
+        return res.status(400).json( {error: 'you must provide a username'} )
+
+    if (!body.password || body.password.length < 3)
+        return res.status(400).json( {error: 'you must provide a password of at least 3 characters'} ) // 400 Bad Request
+
     if (await User.findOne( {username: body.username} )) {
-        res.status(400).json( {error: 'username already exists'})
+        res.status(409).json( {error: 'username already exists'}) // 409 Conflict
     }
     else {   
         const saltRounds = 12
