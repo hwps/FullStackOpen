@@ -7,6 +7,8 @@ const User = require('../models/user')
 
 
 
+/*
+// Extracts auth toke from request header, now moved to middleware and accessible via request.token
 const getToken = request => {
   const authorization = request.get('authorization')
   if (authorization && authorization.startsWith('Bearer ')) {
@@ -14,7 +16,7 @@ const getToken = request => {
   }
   return null
 }
-
+*/
 
 blogsRouter.get('/', async (request, response) => {
   
@@ -24,16 +26,20 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
 
-  if (!request.body.title) response.status(400).json( { error: "title missing" } )
-  else if (!request.body.url) response.status(400).json( { error: "url missing" } )
+  if (!request.body.title) 
+    return response.status(400).json( { error: "title missing" } ) // 400 Bad Request
+  else if (!request.body.url) 
+    return response.status(400).json( { error: "url missing" } ) // 400 Bad Request
   else {
 
-    if (!request.headers.authorization) 
-      return response.status(401).json( {error: 'no authorization, you must login first'} )
+    if (!request.token) 
+      return response.status(401).json( {error: 'no authorization, you must login first'} ) // 401 Unauthorized
     
-    const decodedToken = jwt.verify(getToken( request ), process.env.SECRET)
+    const token = request.token //|| getToken( request )
+  
+    const decodedToken = jwt.verify( token , process.env.SECRET)
     if (!decodedToken.id) {
-      return response.status(401).json( {error: 'invalid auth token'} )
+      return response.status(401).json( {error: 'invalid auth token'} ) // 401 Unauthorized
     }
     const user = await User.findById(decodedToken.id)
       
