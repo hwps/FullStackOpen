@@ -66,9 +66,33 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
-  if (deletedBlog) response.status(204).end()
-  else response.status(404).end()
+  
+  // check for auth token
+  if (!request.token) 
+    return response.status(401).json( {error: 'no authorization, you must login first'} ) // 401 Unauthorized
+  const token = request.token //|| getToken( request )
+
+  // decode auth token
+  let decodedToken = ""
+  try {
+    decodedToken = jwt.verify( token , process.env.SECRET) }
+  catch (error) {
+    return response.status(401).json( {error: 'invalid auth token'} ) // 401 Unauthorized
+  }
+  const user = await User.findById(decodedToken.id)
+  const blog = await Blog.findById(request.params.id)
+  if (blog) {
+    if (decodedToken.id === blog.user.toString()) {
+      
+      
+      const deletedBlog = await blog.deleteOne()
+      //const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
+      if (deletedBlog) return response.status(204).end()
+      else return response.status(404).end()  // 404 Not Found, not sure what would cause us to end up here or what the status should be...
+    }
+    else return response.status(403).json( {error: 'you can only delete your own entries'} ) // 403 Forbidden
+  }
+  else return response.status(404).end() // 404 Not Found
 
 })
 

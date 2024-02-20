@@ -37,14 +37,7 @@ describe('favorite blog', () => {
 
       test('list with several blogs returns the blog with most likes', () => {
         const result = listHelper.favoriteBlog(blogs)
-        expect(result).toEqual(
-            {
-                title: "Canonical string reduction",
-                author: "Edsger W. Dijkstra",
-                url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-                likes: 12,
-            }  
-        )
+        expect(result).toEqual( testdata.blogs[2] )
     })
 })
 

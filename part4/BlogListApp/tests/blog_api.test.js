@@ -193,12 +193,13 @@ describe('DELETE requests (deleting blogs from list)', () => {
 
         const deletedBlog = await test_api
             .delete(`/api/blogs/${id}`)
+            .set('Authorization', `Bearer ${authToken}`)
             .send()
             .expect(204)
 
         const endResult = await testdata.blogsInDB()
         expect(endResult).toHaveLength(testdata.blogCount - 1)
-        expect(endResult).not.toContain(initialBlogs[0].title)
+        expect(endResult[0].title).not.toContain(initialBlogs[0].title)
     })
 
     test('DELETE request to non-existent id returns 404 Not Found', async () => {
@@ -206,8 +207,58 @@ describe('DELETE requests (deleting blogs from list)', () => {
 
         test_api
             .delete(`/api/blogs/${id}`)
+            .set('Authorization', `Bearer ${authToken}`)
             .send()
             .expect(404)
+
+        const endResult = await testdata.blogsInDB()
+        expect(endResult).toHaveLength(testdata.blogCount)
+    })
+
+    test('DELETE request without auth token returns 401 Unauthorized', async () => {
+        const initialBlogs = await testdata.blogsInDB()
+        const id = initialBlogs[0].id
+
+        const deletedBlog = await test_api
+            .delete(`/api/blogs/${id}`)
+            .send()
+            .expect(401)
+
+        const endResult = await testdata.blogsInDB()
+        expect(endResult).toHaveLength(testdata.blogCount)
+        expect(endResult[0].title).toContain(initialBlogs[0].title)
+    })
+
+    test('DELETE request with bad auth token returns 401 Unauthorized', async () => {
+        const initialBlogs = await testdata.blogsInDB()
+        const id = initialBlogs[0].id
+
+        const badToken = 'ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidW5pcXVlIiwiaWQiOiI2NWNlMDE1NDQ4ZGNhZWNiZjFmMzc4NWIiLCJpYXQiOjE3MDg0MTg1MjZ9.czhCjl2Wo_zAHWnrpQK83wdKAtdm1hBno6djka3rbdE'
+
+        const deletedBlog = await test_api
+            .delete(`/api/blogs/${id}`)
+            .set('Authorization', `Bearer ${badToken}`)
+            .send()
+            .expect(401)
+
+        const endResult = await testdata.blogsInDB()
+        expect(endResult).toHaveLength(testdata.blogCount)
+        expect(endResult[0].title).toContain(initialBlogs[0].title)
+    })
+
+    test('DELETE request with auth token not matching the user id of the blog returns 403 Forbidden', async () => {
+        const initialBlogs = await testdata.blogsInDB()
+        const id = initialBlogs[1].id
+
+        const deletedBlog = await test_api
+            .delete(`/api/blogs/${id}`)
+            .set('Authorization', `Bearer ${authToken}`)
+            .send()
+            .expect(403)
+
+        const endResult = await testdata.blogsInDB()
+        expect(endResult).toHaveLength(testdata.blogCount)
+        expect(endResult[1].title).toContain(initialBlogs[1].title)
     })
 })
 
