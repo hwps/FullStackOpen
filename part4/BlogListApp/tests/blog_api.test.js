@@ -8,310 +8,310 @@ const User = require('../models/user')
 
 const test_api = supertest(app)
 
-let authToken = ""
+let authToken = ''
 
 beforeAll( async () => {
 
-    // set up test user data
-    await User.deleteMany({})
-    await User.insertMany( testdata.users )
+	// set up test user data
+	await User.deleteMany({})
+	await User.insertMany( testdata.users )
 
-    // do a login and get an auth token
-    const login = {
-        username: "unique",
-        password: "test"
-    }
+	// do a login and get an auth token
+	const login = {
+		username: 'unique',
+		password: 'test'
+	}
 
-    const loginResponse = await test_api
-        .post('/api/login')
-        .send(login)
-        
-    authToken = loginResponse.body.token
+	const loginResponse = await test_api
+		.post('/api/login')
+		.send(login)
+
+	authToken = loginResponse.body.token
 })
 
 beforeEach( async () => {
-    // reset blog test data
-    await Blog.deleteMany({})
-    await Blog.insertMany( testdata.blogs )
+	// reset blog test data
+	await Blog.deleteMany({})
+	await Blog.insertMany( testdata.blogs )
 })
 
 // GET tests
 
 describe('GET request to blog api root endpoint (getting data for all blogs)', () => {
 
-    test('blog data is returned as json', async () => {
-        await test_api
-            .get('/api/blogs')
-            .expect(200)
-            .expect('Content-Type', /application\/json/)
-    })
+	test('blog data is returned as json', async () => {
+		await test_api
+			.get('/api/blogs')
+			.expect(200)
+			.expect('Content-Type', /application\/json/)
+	})
 
-    test('all blogs are returned', async () => {
-        const response = await test_api.get('/api/blogs')
-        
-        expect(response.body).toHaveLength( testdata.blogCount )
-    })
+	test('all blogs are returned', async () => {
+		const response = await test_api.get('/api/blogs')
 
-    test('id field is named "id" (MongoDB default is _id)', async () => {
-        const response = await test_api.get('/api/blogs')
+		expect(response.body).toHaveLength( testdata.blogCount )
+	})
 
-        response.body.forEach(blogData => {
-            expect(blogData.id).toBeDefined()
-            expect(blogData._id).not.toBeDefined() })
+	test('id field is named "id" (MongoDB default is _id)', async () => {
+		const response = await test_api.get('/api/blogs')
 
-    })
+		response.body.forEach(blogData => {
+			expect(blogData.id).toBeDefined()
+			expect(blogData._id).not.toBeDefined() })
+
+	})
 })
 
 // POST tests
 
 describe('POST requests to blog api root endpoint (adding new blogs to list)', () => {
 
-    test('POST request to root endpoint adds blog', async () => {
-        const newBlog = {
-            title: "Test title",
-            author: "Test Author",
-            url: "https://localhost/",
-            likes: 0,
-        }
-        
-        await test_api
-            .post('/api/blogs')
-            .set('Authorization', `Bearer ${authToken}`)
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-        
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogs.length + 1)
+	test('POST request to root endpoint adds blog', async () => {
+		const newBlog = {
+			title: 'Test title',
+			author: 'Test Author',
+			url: 'https://localhost/',
+			likes: 0,
+		}
 
-        //console.log(endResult)
-        const titles = endResult.map(blog => blog.title)
-        expect(titles).toContain('Test title')
-    })
+		await test_api
+			.post('/api/blogs')
+			.set('Authorization', `Bearer ${authToken}`)
+			.send(newBlog)
+			.expect(201)
+			.expect('Content-Type', /application\/json/)
 
-    test('attempting to POST a new blog with missing auth token will return a 401 Unauthorized status', async () => {
-        
-        
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogs.length + 1)
 
-        const newBlog = {
-            title: "Test title",
-            author: "Test Author",
-            url: "https://localhost/",
-            likes: 0,
-        }
-        
-        await test_api
-            .post('/api/blogs')
-            .send(newBlog)
-            .expect(401)
-            .expect('Content-Type', /application\/json/)
-        
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogs.length)
+		//console.log(endResult)
+		const titles = endResult.map(blog => blog.title)
+		expect(titles).toContain('Test title')
+	})
 
-        //console.log(endResult)
-        const titles = endResult.map(blog => blog.title)
-        expect(titles).not.toContain('Test title')
-    })
+	test('attempting to POST a new blog with missing auth token will return a 401 Unauthorized status', async () => {
 
-    test('attempting to POST a new blog with incorrect auth token will return a 401 Unauthorized status', async () => {
 
-        const badToken = 'ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidW5pcXVlIiwiaWQiOiI2NWNlMDE1NDQ4ZGNhZWNiZjFmMzc4NWIiLCJpYXQiOjE3MDg0MTg1MjZ9.czhCjl2Wo_zAHWnrpQK83wdKAtdm1hBno6djka3rbdE'
 
-        const newBlog = {
-            title: "Test title",
-            author: "Test Author",
-            url: "https://localhost/",
-            likes: 0,
-        }
+		const newBlog = {
+			title: 'Test title',
+			author: 'Test Author',
+			url: 'https://localhost/',
+			likes: 0,
+		}
 
-        await test_api
-            .post('/api/blogs')
-            .set('Authorization', `Bearer ${badToken}`)
-            .send(newBlog)
-            .expect(401)
-            .expect('Content-Type', /application\/json/)
+		await test_api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(401)
+			.expect('Content-Type', /application\/json/)
 
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogs.length)
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogs.length)
 
-        //console.log(endResult)
-        const titles = endResult.map(blog => blog.title)
-        expect(titles).not.toContain('Test title')
-        })
+		//console.log(endResult)
+		const titles = endResult.map(blog => blog.title)
+		expect(titles).not.toContain('Test title')
+	})
 
-    test('attempting to POST new blog with missing title will return a 400 Bad Request status', async () => {
-        const newBlog = {
-            author: "Test Author",
-            url: "https://localhost/",
-        }
-        
-        const returnedBlog = await test_api
-            .post('/api/blogs')
-            .set('Authorization', `Bearer ${authToken}`)
-            .send(newBlog)
-            .expect(400)
+	test('attempting to POST a new blog with incorrect auth token will return a 401 Unauthorized status', async () => {
 
-    })
+		const badToken = 'ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidW5pcXVlIiwiaWQiOiI2NWNlMDE1NDQ4ZGNhZWNiZjFmMzc4NWIiLCJpYXQiOjE3MDg0MTg1MjZ9.czhCjl2Wo_zAHWnrpQK83wdKAtdm1hBno6djka3rbdE'
 
-    test('attempting to POST new blog with missing url will return a 400 Bad Request status', async () => {
-        const newBlog = {
-            title: "Test title",
-            author: "Test Author",
-        }
-        
-        const returnedBlog = await test_api
-            .post('/api/blogs')
-            .set('Authorization', `Bearer ${authToken}`)
-            .send(newBlog)
-            .expect(400)
+		const newBlog = {
+			title: 'Test title',
+			author: 'Test Author',
+			url: 'https://localhost/',
+			likes: 0,
+		}
 
-    })
+		await test_api
+			.post('/api/blogs')
+			.set('Authorization', `Bearer ${badToken}`)
+			.send(newBlog)
+			.expect(401)
+			.expect('Content-Type', /application\/json/)
 
-    test('new blog with undefined number of likes will get an initial like count of zero', async () => {
-        const newBlog = {
-            title: "Test title",
-            author: "Test Author",
-            url: "https://localhost/",
-        }
-        
-        const returnedBlog = await test_api
-            .post('/api/blogs')
-            .set('Authorization', `Bearer ${authToken}`)
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-        
-        expect(returnedBlog.body.likes).toEqual(0)
-    })
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogs.length)
+
+		//console.log(endResult)
+		const titles = endResult.map(blog => blog.title)
+		expect(titles).not.toContain('Test title')
+	})
+
+	test('attempting to POST new blog with missing title will return a 400 Bad Request status', async () => {
+		const newBlog = {
+			author: 'Test Author',
+			url: 'https://localhost/',
+		}
+
+		await test_api
+			.post('/api/blogs')
+			.set('Authorization', `Bearer ${authToken}`)
+			.send(newBlog)
+			.expect(400)
+
+	})
+
+	test('attempting to POST new blog with missing url will return a 400 Bad Request status', async () => {
+		const newBlog = {
+			title: 'Test title',
+			author: 'Test Author',
+		}
+
+		await test_api
+			.post('/api/blogs')
+			.set('Authorization', `Bearer ${authToken}`)
+			.send(newBlog)
+			.expect(400)
+
+	})
+
+	test('new blog with undefined number of likes will get an initial like count of zero', async () => {
+		const newBlog = {
+			title: 'Test title',
+			author: 'Test Author',
+			url: 'https://localhost/',
+		}
+
+		const returnedBlog = await test_api
+			.post('/api/blogs')
+			.set('Authorization', `Bearer ${authToken}`)
+			.send(newBlog)
+			.expect(201)
+			.expect('Content-Type', /application\/json/)
+
+		expect(returnedBlog.body.likes).toEqual(0)
+	})
 })
 
 // DELETE tests
 
 describe('DELETE requests (deleting blogs from list)', () => {
-    test('DELETE request to "/<id>" deletes blog from list', async () => {
-        const initialBlogs = await testdata.blogsInDB()
-        const id = initialBlogs[0].id
+	test('DELETE request to "/<id>" deletes blog from list', async () => {
+		const initialBlogs = await testdata.blogsInDB()
+		const id = initialBlogs[0].id
 
-        const deletedBlog = await test_api
-            .delete(`/api/blogs/${id}`)
-            .set('Authorization', `Bearer ${authToken}`)
-            .send()
-            .expect(204)
+		await test_api
+			.delete(`/api/blogs/${id}`)
+			.set('Authorization', `Bearer ${authToken}`)
+			.send()
+			.expect(204)
 
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount - 1)
-        expect(endResult[0].title).not.toContain(initialBlogs[0].title)
-    })
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount - 1)
+		expect(endResult[0].title).not.toContain(initialBlogs[0].title)
+	})
 
-    test('DELETE request to non-existent id returns 404 Not Found', async () => {
-        const id = '000000000000000000abad1d'
+	test('DELETE request to non-existent id returns 404 Not Found', async () => {
+		const id = '000000000000000000abad1d'
 
-        test_api
-            .delete(`/api/blogs/${id}`)
-            .set('Authorization', `Bearer ${authToken}`)
-            .send()
-            .expect(404)
+		test_api
+			.delete(`/api/blogs/${id}`)
+			.set('Authorization', `Bearer ${authToken}`)
+			.send()
+			.expect(404)
 
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount)
-    })
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount)
+	})
 
-    test('DELETE request without auth token returns 401 Unauthorized', async () => {
-        const initialBlogs = await testdata.blogsInDB()
-        const id = initialBlogs[0].id
+	test('DELETE request without auth token returns 401 Unauthorized', async () => {
+		const initialBlogs = await testdata.blogsInDB()
+		const id = initialBlogs[0].id
 
-        const deletedBlog = await test_api
-            .delete(`/api/blogs/${id}`)
-            .send()
-            .expect(401)
+		await test_api
+			.delete(`/api/blogs/${id}`)
+			.send()
+			.expect(401)
 
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount)
-        expect(endResult[0].title).toContain(initialBlogs[0].title)
-    })
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount)
+		expect(endResult[0].title).toContain(initialBlogs[0].title)
+	})
 
-    test('DELETE request with bad auth token returns 401 Unauthorized', async () => {
-        const initialBlogs = await testdata.blogsInDB()
-        const id = initialBlogs[0].id
+	test('DELETE request with bad auth token returns 401 Unauthorized', async () => {
+		const initialBlogs = await testdata.blogsInDB()
+		const id = initialBlogs[0].id
 
-        const badToken = 'ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidW5pcXVlIiwiaWQiOiI2NWNlMDE1NDQ4ZGNhZWNiZjFmMzc4NWIiLCJpYXQiOjE3MDg0MTg1MjZ9.czhCjl2Wo_zAHWnrpQK83wdKAtdm1hBno6djka3rbdE'
+		const badToken = 'ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidW5pcXVlIiwiaWQiOiI2NWNlMDE1NDQ4ZGNhZWNiZjFmMzc4NWIiLCJpYXQiOjE3MDg0MTg1MjZ9.czhCjl2Wo_zAHWnrpQK83wdKAtdm1hBno6djka3rbdE'
 
-        const deletedBlog = await test_api
-            .delete(`/api/blogs/${id}`)
-            .set('Authorization', `Bearer ${badToken}`)
-            .send()
-            .expect(401)
+		await test_api
+			.delete(`/api/blogs/${id}`)
+			.set('Authorization', `Bearer ${badToken}`)
+			.send()
+			.expect(401)
 
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount)
-        expect(endResult[0].title).toContain(initialBlogs[0].title)
-    })
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount)
+		expect(endResult[0].title).toContain(initialBlogs[0].title)
+	})
 
-    test('DELETE request with auth token not matching the user id of the blog returns 403 Forbidden', async () => {
-        const initialBlogs = await testdata.blogsInDB()
-        const id = initialBlogs[1].id
+	test('DELETE request with auth token not matching the user id of the blog returns 403 Forbidden', async () => {
+		const initialBlogs = await testdata.blogsInDB()
+		const id = initialBlogs[1].id
 
-        const deletedBlog = await test_api
-            .delete(`/api/blogs/${id}`)
-            .set('Authorization', `Bearer ${authToken}`)
-            .send()
-            .expect(403)
+		await test_api
+			.delete(`/api/blogs/${id}`)
+			.set('Authorization', `Bearer ${authToken}`)
+			.send()
+			.expect(403)
 
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount)
-        expect(endResult[1].title).toContain(initialBlogs[1].title)
-    })
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount)
+		expect(endResult[1].title).toContain(initialBlogs[1].title)
+	})
 })
 
 describe('PUT requests (editing blogs in list', () => {
-    test('PUT request to "/<id> updates blog in list', async () => {
+	test('PUT request to "/<id> updates blog in list', async () => {
 
-        const initialData = await testdata.blogsInDB()
-        const id = initialData[0].id
+		const initialData = await testdata.blogsInDB()
+		const id = initialData[0].id
 
-        const updatedData = {
-            title: initialData[0].title,
-            author: "Test Author",
-            url: initialData[0].url,
-            likes: initialData[0].likes
-        }
+		const updatedData = {
+			title: initialData[0].title,
+			author: 'Test Author',
+			url: initialData[0].url,
+			likes: initialData[0].likes
+		}
 
-        await test_api
-            .put(`/api/blogs/${id}`)
-            .send(updatedData)
-            .expect(204)
-
-        
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount)
-        expect(endResult[0].author).toContain(updatedData.author)
-    })
+		await test_api
+			.put(`/api/blogs/${id}`)
+			.send(updatedData)
+			.expect(204)
 
 
-    test('PUT request to nonexisting id returns 404 Not Found', async () => {
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount)
+		expect(endResult[0].author).toContain(updatedData.author)
+	})
 
-        const initialData = await testdata.blogsInDB()
-        const id = '000000000000000000abad1d'
 
-        const updatedData = {
-            title: initialData[0].title,
-            author: "Test Author",
-            url: initialData[0].url,
-            likes: initialData[0].likes
-        }
+	test('PUT request to nonexisting id returns 404 Not Found', async () => {
 
-        await test_api
-            .put(`/api/blogs/${id}`)
-            .send(updatedData)
-            .expect(404)
+		const initialData = await testdata.blogsInDB()
+		const id = '000000000000000000abad1d'
 
-        
-        const endResult = await testdata.blogsInDB()
-        expect(endResult).toHaveLength(testdata.blogCount)
-    })
+		const updatedData = {
+			title: initialData[0].title,
+			author: 'Test Author',
+			url: initialData[0].url,
+			likes: initialData[0].likes
+		}
+
+		await test_api
+			.put(`/api/blogs/${id}`)
+			.send(updatedData)
+			.expect(404)
+
+
+		const endResult = await testdata.blogsInDB()
+		expect(endResult).toHaveLength(testdata.blogCount)
+	})
 })
 
 afterAll( async () => {
-    await mongoose.connection.close()
+	await mongoose.connection.close()
 })
