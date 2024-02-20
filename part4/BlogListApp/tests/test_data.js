@@ -9,7 +9,7 @@ const users = [
     "_id": "65ce015448dcaecbf1f3785b",
     "username":"unique",
     "name":"Unique Name",
-    "passwordHash":"$2b$12$pWtAUw6wwoU0dsGgqLaZ4e9ous/TMWKf6GwkxqcAO9FR4UqrJtTKG",
+    "passwordHash":"$2b$12$pWtAUw6wwoU0dsGgqLaZ4e9ous/TMWKf6GwkxqcAO9FR4UqrJtTKG", // "test"
     "blogs":[],
   }
 ]

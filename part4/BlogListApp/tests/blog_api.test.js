@@ -4,11 +4,33 @@ const supertest = require('supertest')
 const app = require('../app')
 const testdata = require('./test_data')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const test_api = supertest(app)
 
+let authToken = ""
+
+beforeAll( async () => {
+
+    // set up test user data
+    await User.deleteMany({})
+    await User.insertMany( testdata.users )
+
+    // do a login and get an auth token
+    const login = {
+        username: "unique",
+        password: "test"
+    }
+
+    const loginResponse = await test_api
+        .post('/api/login')
+        .send(login)
+        
+    authToken = loginResponse.body.token
+})
 
 beforeEach( async () => {
+    // reset blog test data
     await Blog.deleteMany({})
     await Blog.insertMany( testdata.blogs )
 })
@@ -54,6 +76,7 @@ describe('POST requests to blog api root endpoint (adding new blogs to list)', (
         
         await test_api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${authToken}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -65,6 +88,57 @@ describe('POST requests to blog api root endpoint (adding new blogs to list)', (
         const titles = endResult.map(blog => blog.title)
         expect(titles).toContain('Test title')
     })
+
+    test('attempting to POST a new blog with missing auth token will return a 401 Unauthorized status', async () => {
+        
+        
+
+        const newBlog = {
+            title: "Test title",
+            author: "Test Author",
+            url: "https://localhost/",
+            likes: 0,
+        }
+        
+        await test_api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+        
+        const endResult = await testdata.blogsInDB()
+        expect(endResult).toHaveLength(testdata.blogs.length)
+
+        //console.log(endResult)
+        const titles = endResult.map(blog => blog.title)
+        expect(titles).not.toContain('Test title')
+    })
+
+    test('attempting to POST a new blog with incorrect auth token will return a 401 Unauthorized status', async () => {
+
+        const badToken = 'ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidW5pcXVlIiwiaWQiOiI2NWNlMDE1NDQ4ZGNhZWNiZjFmMzc4NWIiLCJpYXQiOjE3MDg0MTg1MjZ9.czhCjl2Wo_zAHWnrpQK83wdKAtdm1hBno6djka3rbdE'
+
+        const newBlog = {
+            title: "Test title",
+            author: "Test Author",
+            url: "https://localhost/",
+            likes: 0,
+        }
+
+        await test_api
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${badToken}`)
+            .send(newBlog)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+
+        const endResult = await testdata.blogsInDB()
+        expect(endResult).toHaveLength(testdata.blogs.length)
+
+        //console.log(endResult)
+        const titles = endResult.map(blog => blog.title)
+        expect(titles).not.toContain('Test title')
+        })
 
     test('attempting to POST new blog with missing title will return a 400 Bad Request status', async () => {
         const newBlog = {
@@ -101,6 +175,7 @@ describe('POST requests to blog api root endpoint (adding new blogs to list)', (
         
         const returnedBlog = await test_api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${authToken}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)

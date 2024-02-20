@@ -36,9 +36,11 @@ blogsRouter.post('/', async (request, response) => {
       return response.status(401).json( {error: 'no authorization, you must login first'} ) // 401 Unauthorized
     
     const token = request.token //|| getToken( request )
-  
-    const decodedToken = jwt.verify( token , process.env.SECRET)
-    if (!decodedToken.id) {
+
+    let decodedToken = ""
+    try {
+      decodedToken = jwt.verify( token , process.env.SECRET) }
+    catch (error) {
       return response.status(401).json( {error: 'invalid auth token'} ) // 401 Unauthorized
     }
     const user = await User.findById(decodedToken.id)
