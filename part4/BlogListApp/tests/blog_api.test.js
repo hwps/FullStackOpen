@@ -148,6 +148,7 @@ describe('POST requests to blog api root endpoint (adding new blogs to list)', (
         
         const returnedBlog = await test_api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${authToken}`)
             .send(newBlog)
             .expect(400)
 
@@ -161,6 +162,7 @@ describe('POST requests to blog api root endpoint (adding new blogs to list)', (
         
         const returnedBlog = await test_api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${authToken}`)
             .send(newBlog)
             .expect(400)
 
