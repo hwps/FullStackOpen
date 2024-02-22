@@ -6,18 +6,18 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
   
-  
+  // REACT EFFECTS
+
   // fetch saved user credentials from localStorage on load
   useEffect( () => {
     const loginJSON = window.localStorage.getItem('BlogListAppLogin')
     if (loginJSON) {
       const user = JSON.parse(loginJSON)
       setUser(user)
-      //noteService.setToken(user.token)
+      if (user) blogService.setToken(user.token)
     }
   }, [])
 
@@ -28,19 +28,23 @@ const App = () => {
     )  
   }, [])
 
+
+  // EVENT CALLBACKS
+
   // user login form submit handler
   const handleLogin = async (event) => {
     event.preventDefault()
-
+    
+    const formData = new FormData(event.currentTarget)
+    const form = {}
+    for (const [key, val] of formData.entries()) form[key] = val
+    
     try {
-      const user = await loginService.login( {username, password} )
+      const user = await loginService.login( {username: form.username, password: form.password} )
       
       window.localStorage.setItem('BlogListAppLogin', JSON.stringify(user))
-      //noteService.setToken(user.token)
+      blogService.setToken(user.token)
       setUser(user)
-
-      setUsername('')
-      setPassword('')
     } catch (exception) {
       console.log('wrong credentials')
       //setErrorMessage('wrong credentials')
@@ -54,23 +58,53 @@ const App = () => {
     setUser(null)
   }
 
+  const handleAddBlog = async (event) => {
+    event.preventDefault()
+
+    const formData = new FormData(event.currentTarget)
+    const form = {}
+    for (const [key, val] of formData.entries()) form[key] = val
+    console.log(form)
+
+    try {
+      const addedBlog = await blogService.postNew( {title: form.title, author: form.author, url: form.url} )
+      setBlogs(blogs.concat(addedBlog))
+    } catch (exception) {
+      console.log(exception)
+    }
+
+
+  }
+
+  // COMPONENTS
+
   // login form component
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>Username:
-        <input type="text" value={username} name="Username" onChange={({target}) => {
-          setUsername(target.value) }} 
+        <input type="text" name="username" onChange={({target}) => {
+          /* setUsername(target.value)*/ }} 
         />
       </div>
 
       <div>Password:
-        <input type="password" value={password} name="Password" onChange={({target}) => {
-          setPassword(target.value) }} 
+        <input type="password" name="password" onChange={({target}) => {
+          /* setPassword(target.value)*/ }} 
         />
       </div>
       <button type="submit">Login</button>
     </form>
-)
+  )
+
+  // add blog form component
+  const addBlogForm = () => (
+    <form onSubmit={handleAddBlog}>
+      <div>Title: <input type="text" name="title"/></div>
+      <div>Author: <input type="text" name="author"/></div>
+      <div>URL: <input type="text" name="url"/></div>
+      <button type="submit">Add Blog</button>
+    </form>
+  )
 
   // display login form if user not logged in
   if (user === null) {
@@ -85,11 +119,15 @@ const App = () => {
   // else display blog list
   return (
     <div>
-      <h2>Blogs</h2>
+      <h1>Blog List</h1>
       <p>Logged in as {user.name} <button onClick={() => handleLogout()}>Log out</button></p>
+      <h2>Blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
+      <div>
+      {addBlogForm()}
+      </div>
     </div>
   )
 }
