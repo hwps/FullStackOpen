@@ -3,10 +3,41 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+const Notification = ({ message, type }) => {
+  
+  const styles = {
+    error: {
+      color: 'red',
+      background: 'lightgrey',
+      fontSize: 20,
+      borderStyle: 'solid',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10 },
+    info: {
+      color: 'green',
+      background: 'lightgrey',
+      fontSize: 20,
+      borderStyle: 'solid',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10 }
+  }
+  
+  if (message === null) { return null }
+  return (
+    <div style={styles[type]}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  
   const [user, setUser] = useState(null)
+
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState('info') // valid types: info, error
 
   
   // REACT EFFECTS
@@ -28,6 +59,15 @@ const App = () => {
     )  
   }, [])
 
+  // NOTIFICATION COMPONENT SETTER
+
+  // valid types: info, error
+  const displayNotification = (message, type) => {
+    setNotificationMessage(message)
+    setNotificationType(type)
+    setTimeout(() => setNotificationMessage(null), 5000) // hide notification after 5 sec
+  }
+
 
   // EVENT CALLBACKS
 
@@ -46,9 +86,8 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
     } catch (exception) {
-      console.log('wrong credentials')
-      //setErrorMessage('wrong credentials')
-      //setTimeout( () => {setErrorMessage(null)}, 5000 )
+      //console.log(exception)
+      displayNotification('Incorrect username or password', 'error')
     }
   }
   
@@ -69,14 +108,16 @@ const App = () => {
     try {
       const addedBlog = await blogService.postNew( {title: form.title, author: form.author, url: form.url} )
       setBlogs(blogs.concat(addedBlog))
+      displayNotification(`Added ${addedBlog.title} to blog list`, 'info')
     } catch (exception) {
       console.log(exception)
+      displayNotification(`Error adding blog`, 'error')
     }
 
 
   }
 
-  // COMPONENTS
+  // SUB-COMPONENTS
 
   // login form component
   const loginForm = () => (
@@ -123,9 +164,13 @@ const App = () => {
     </div>
   )
 
+
+  // RETURN MAIN COMPONENT
+
   return (
     <div>
       <h1>Blog List</h1>
+      <Notification message={notificationMessage} type={notificationType} />
       {!user && loginForm()}
       {user && blogList()}
     </div>
