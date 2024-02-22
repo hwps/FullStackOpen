@@ -80,20 +80,23 @@ const App = () => {
 
   // login form component
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>Username:
-        <input type="text" name="username" onChange={({target}) => {
-          /* setUsername(target.value)*/ }} 
-        />
-      </div>
+    <div>
+      <h2>Log in to application</h2>
+      <form onSubmit={handleLogin}>
+        <div>Username:
+          <input type="text" name="username" onChange={({target}) => {
+            /* setUsername(target.value)*/ }} 
+            />
+        </div>
 
-      <div>Password:
-        <input type="password" name="password" onChange={({target}) => {
-          /* setPassword(target.value)*/ }} 
-        />
-      </div>
-      <button type="submit">Login</button>
-    </form>
+        <div>Password:
+          <input type="password" name="password" onChange={({target}) => {
+            /* setPassword(target.value)*/ }} 
+            />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
   )
 
   // add blog form component
@@ -106,28 +109,25 @@ const App = () => {
     </form>
   )
 
-  // display login form if user not logged in
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        {loginForm()}
-      </div>
-    )
-  }
+  // blog list component
+  const blogList = () => (
+    <div>
+      <p>Logged in as {user.name} <button onClick={() => handleLogout()}>Log out</button></p>
+          <h2>Blogs</h2>
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} />
+          )}
+          <div>
+            {addBlogForm()}
+          </div>
+    </div>
+  )
 
-  // else display blog list
   return (
     <div>
       <h1>Blog List</h1>
-      <p>Logged in as {user.name} <button onClick={() => handleLogout()}>Log out</button></p>
-      <h2>Blogs</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-      <div>
-      {addBlogForm()}
-      </div>
+      {!user && loginForm()}
+      {user && blogList()}
     </div>
   )
 }
