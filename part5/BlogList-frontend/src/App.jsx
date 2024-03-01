@@ -102,29 +102,11 @@ const App = () => {
     setUser(null)
   }
 
-  /* 
-  const handleAddBlog = async (event) => {
-    event.preventDefault()
-
-    const formData = new FormData(event.currentTarget)
-    const form = {}
-    for (const [key, val] of formData.entries()) form[key] = val
-    console.log(form)
-    
-    try {
-      const addedBlog = await blogService.postNew( {title: form.title, author: form.author, url: form.url} )
-      setBlogs(blogs.concat(addedBlog))
-      displayNotification(`Added ${addedBlog.title} to blog list`, 'info')
-    } catch (exception) {
-      console.log(exception)
-      displayNotification(`Error adding blog`, 'error')
-    }  
-  }
-  */
-
   const handleBlogListEntry = async (newBlogData) => {
     try {
       const addedBlog = await blogService.postNew( newBlogData )
+
+      addedBlog.user = {name: user.name}
       setBlogs(blogs.concat(addedBlog))
       displayNotification(`Added ${addedBlog.title} to blog list`, 'info')
       blogFormRef.current.toggleVisibility()
@@ -156,17 +138,6 @@ const App = () => {
       </form>
     </div>
   )
-/* 
-// add blog form component
-const addBlogForm = () => (
-  <form onSubmit={handleAddBlog}>
-  <div>Title: <input type="text" name="title"/></div>
-  <div>Author: <input type="text" name="author"/></div>
-  <div>URL: <input type="text" name="url"/></div>
-      <button type="submit">Add Blog</button>
-      </form>
-      )
-      */
       
   // blog list component
   const blogList = () => (
