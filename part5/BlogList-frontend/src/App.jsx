@@ -1,5 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+
 import Blog from './components/Blog'
+import Togglable from './components/Togglable'
+import AddBlogForm from './components/AddBlogForm'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -39,6 +43,7 @@ const App = () => {
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState('info') // valid types: info, error
 
+  const blogFormRef = useRef()
   
   // REACT EFFECTS
 
@@ -97,6 +102,7 @@ const App = () => {
     setUser(null)
   }
 
+  /* 
   const handleAddBlog = async (event) => {
     event.preventDefault()
 
@@ -104,7 +110,7 @@ const App = () => {
     const form = {}
     for (const [key, val] of formData.entries()) form[key] = val
     console.log(form)
-
+    
     try {
       const addedBlog = await blogService.postNew( {title: form.title, author: form.author, url: form.url} )
       setBlogs(blogs.concat(addedBlog))
@@ -112,10 +118,21 @@ const App = () => {
     } catch (exception) {
       console.log(exception)
       displayNotification(`Error adding blog`, 'error')
-    }
-
-
+    }  
   }
+  */
+
+  const handleBlogListEntry = async (newBlogData) => {
+    try {
+      const addedBlog = await blogService.postNew( newBlogData )
+      setBlogs(blogs.concat(addedBlog))
+      displayNotification(`Added ${addedBlog.title} to blog list`, 'info')
+      blogFormRef.current.toggleVisibility()
+    } catch (exception) {
+      console.log(exception)
+      displayNotification(`Error adding blog`, 'error')
+    }
+  } 
 
   // SUB-COMPONENTS
 
@@ -139,17 +156,18 @@ const App = () => {
       </form>
     </div>
   )
-
-  // add blog form component
-  const addBlogForm = () => (
-    <form onSubmit={handleAddBlog}>
-      <div>Title: <input type="text" name="title"/></div>
-      <div>Author: <input type="text" name="author"/></div>
-      <div>URL: <input type="text" name="url"/></div>
+/* 
+// add blog form component
+const addBlogForm = () => (
+  <form onSubmit={handleAddBlog}>
+  <div>Title: <input type="text" name="title"/></div>
+  <div>Author: <input type="text" name="author"/></div>
+  <div>URL: <input type="text" name="url"/></div>
       <button type="submit">Add Blog</button>
-    </form>
-  )
-
+      </form>
+      )
+      */
+      
   // blog list component
   const blogList = () => (
     <div>
@@ -159,7 +177,10 @@ const App = () => {
             <Blog key={blog.id} blog={blog} />
           )}
           <div>
-            {addBlogForm()}
+            <Togglable buttonLabel="Add new blog"  ref={blogFormRef}>
+              <AddBlogForm addBlogListEntry={handleBlogListEntry}/>
+              {/*addBlogForm()*/}
+            </Togglable>
           </div>
     </div>
   )
