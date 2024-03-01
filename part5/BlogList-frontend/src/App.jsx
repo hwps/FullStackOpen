@@ -45,6 +45,12 @@ const App = () => {
 
   const blogFormRef = useRef()
   
+  const blogSortFunc = (a, b) => {
+    // Pass to Array.sort() to sort blogs according to likes
+    if (a.likes === b.likes) return 0
+    else return a.likes > b.likes ? -1 : 1
+  }
+
   // REACT EFFECTS
 
   // fetch saved user credentials from localStorage on load
@@ -59,9 +65,10 @@ const App = () => {
 
   // get all blogs on load
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    blogService.getAll().then(blogs => {
+      blogs.sort(blogSortFunc)
+      setBlogs( blogs ) }
+      )  
   }, [])
 
   // NOTIFICATION COMPONENT SETTER
@@ -102,6 +109,7 @@ const App = () => {
     setUser(null)
   }
 
+  // new blog form handler
   const handleBlogListEntry = async (newBlogData) => {
     try {
       const addedBlog = await blogService.postNew( newBlogData )
@@ -116,10 +124,12 @@ const App = () => {
     }
   } 
 
+  // like button handler
   const handleLike = async (blogData) => {
     const updatedBlog = await blogService.addLike(blogData)
-    const updatedId = updatedBlog.id
-    setBlogs(blogs.map(blog => blog.id === updatedId ? updatedBlog : blog))
+    const newBlogList = blogs.map(blog => blog.id === updatedBlog.id ? {...blog, likes: updatedBlog.likes} : blog)
+    newBlogList.sort(blogSortFunc)
+    setBlogs(newBlogList) 
   }
 
   // SUB-COMPONENTS
@@ -161,7 +171,6 @@ const App = () => {
           </div>
     </div>
   )
-
 
   // RETURN MAIN COMPONENT
 
