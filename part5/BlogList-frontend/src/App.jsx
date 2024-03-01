@@ -116,6 +116,12 @@ const App = () => {
     }
   } 
 
+  const handleLike = async (blogData) => {
+    const updatedBlog = await blogService.addLike(blogData)
+    const updatedId = updatedBlog.id
+    setBlogs(blogs.map(blog => blog.id === updatedId ? updatedBlog : blog))
+  }
+
   // SUB-COMPONENTS
 
   // login form component
@@ -145,7 +151,7 @@ const App = () => {
       <p>Logged in as {user.name} <button onClick={() => handleLogout()}>Log out</button></p>
           <h2>Blogs</h2>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
           )}
           <div>
             <Togglable buttonLabel="Add new blog"  ref={blogFormRef}>
