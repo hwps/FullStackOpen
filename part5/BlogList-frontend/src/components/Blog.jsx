@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ blog, handleLike, handleDelete, showDeleteButton }) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -32,6 +32,9 @@ const Blog = ({ blog, handleLike }) => {
         </div>
         <div>
           Added by: {blog.user.name}
+        </div>
+        <div style={{display: showDeleteButton ? '' : 'none'}}>
+          <button onClick={() => handleDelete(blog)}>Delete</button>
         </div>
       </div> 
     </div>
