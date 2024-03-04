@@ -8,7 +8,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const Notification = ({ message, type }) => {
-  
+
   const styles = {
     error: {
       color: 'red',
@@ -27,7 +27,7 @@ const Notification = ({ message, type }) => {
       padding: 10,
       marginBottom: 10 }
   }
-  
+
   if (message === null) { return null }
   return (
     <div style={styles[type]}>
@@ -44,7 +44,7 @@ const App = () => {
   const [notificationType, setNotificationType] = useState('info') // valid types: info, error
 
   const blogFormRef = useRef()
-  
+
   const blogSortFunc = (a, b) => {
     // Pass to Array.sort() to sort blogs according to likes
     if (a.likes === b.likes) return 0
@@ -68,7 +68,7 @@ const App = () => {
     blogService.getAll().then(blogs => {
       blogs.sort(blogSortFunc)
       setBlogs( blogs ) }
-      )  
+    )
   }, [])
 
   // NOTIFICATION COMPONENT SETTER
@@ -86,14 +86,14 @@ const App = () => {
   // user login form submit handler
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     const formData = new FormData(event.currentTarget)
     const form = {}
     for (const [key, val] of formData.entries()) form[key] = val
-    
+
     try {
-      const user = await loginService.login( {username: form.username, password: form.password} )
-      
+      const user = await loginService.login( { username: form.username, password: form.password } )
+
       window.localStorage.setItem('BlogListAppLogin', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
@@ -102,7 +102,7 @@ const App = () => {
       displayNotification('Incorrect username or password', 'error')
     }
   }
-  
+
   // user logout button handler
   const handleLogout = async (event) => {
     window.localStorage.setItem('BlogListAppLogin', null)
@@ -114,22 +114,22 @@ const App = () => {
     try {
       const addedBlog = await blogService.postNew( newBlogData )
 
-      addedBlog.user = {name: user.name}
+      addedBlog.user = { name: user.name }
       setBlogs(blogs.concat(addedBlog))
       displayNotification(`Added ${addedBlog.title} to blog list`, 'info')
       blogFormRef.current.toggleVisibility()
     } catch (exception) {
       console.log(exception)
-      displayNotification(`Error adding blog`, 'error')
+      displayNotification('Error adding blog', 'error')
     }
-  } 
+  }
 
   // like button handler
   const handleLike = async (blogData) => {
     const updatedBlog = await blogService.addLike(blogData)
-    const newBlogList = blogs.map(blog => blog.id === updatedBlog.id ? {...blog, likes: updatedBlog.likes} : blog)
+    const newBlogList = blogs.map(blog => blog.id === updatedBlog.id ? { ...blog, likes: updatedBlog.likes } : blog)
     newBlogList.sort(blogSortFunc)
-    setBlogs(newBlogList) 
+    setBlogs(newBlogList)
   }
 
   const handleDelete = async (blog) => {
@@ -152,40 +152,40 @@ const App = () => {
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>Username:
-          <input type="text" name="username" onChange={({target}) => {
-            /* setUsername(target.value)*/ }} 
-            />
+          <input type="text" name="username" onChange={({ target }) => {
+            /* setUsername(target.value)*/ }}
+          />
         </div>
 
         <div>Password:
-          <input type="password" name="password" onChange={({target}) => {
-            /* setPassword(target.value)*/ }} 
-            />
+          <input type="password" name="password" onChange={({ target }) => {
+            /* setPassword(target.value)*/ }}
+          />
         </div>
         <button type="submit">Login</button>
       </form>
     </div>
   )
-      
+
   // blog list component
   const blogList = () => (
     <div>
       <p>Logged in as {user.name} <button onClick={() => handleLogout()}>Log out</button></p>
-          <h2>Blogs</h2>
-          {blogs.map(blog =>
-            <Blog 
-              key={blog.id} 
-              blog={blog} 
-              handleLike={handleLike}  
-              showDeleteButton={user.username === blog.user.username ? true : false}
-              handleDelete={handleDelete}
-            />
-          )}
-          <div>
-            <Togglable buttonLabel="Add new blog"  ref={blogFormRef}>
-              <AddBlogForm addBlogListEntry={handleBlogListEntry}/>
-            </Togglable>
-          </div>
+      <h2>Blogs</h2>
+      {blogs.map(blog =>
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLike={handleLike}
+          showDeleteButton={user.username === blog.user.username ? true : false}
+          handleDelete={handleDelete}
+        />
+      )}
+      <div>
+        <Togglable buttonLabel="Add new blog"  ref={blogFormRef}>
+          <AddBlogForm addBlogListEntry={handleBlogListEntry}/>
+        </Togglable>
+      </div>
     </div>
   )
 

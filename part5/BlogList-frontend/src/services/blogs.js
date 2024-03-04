@@ -14,7 +14,7 @@ const getAll = () => {
 
 const postNew = async (newObject) => {
   const config = {
-    headers: {Authorization: token},
+    headers: { Authorization: token },
   }
   const response = await axios.post(baseUrl, newObject, config)
   return response.data
@@ -35,7 +35,7 @@ const addLike = async (blogObject) => {
 
 const deleteBlog = async (id) => {
   const config = {
-    headers: {Authorization: token},
+    headers: { Authorization: token },
   }
 
   const response = await axios.delete(`${baseUrl}/${id}`, config)

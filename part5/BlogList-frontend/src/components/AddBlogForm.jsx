@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
-const AddBlogForm = ({addBlogListEntry}) => {
-  
+const AddBlogForm = ({ addBlogListEntry }) => {
+
   const newBlog = async (event) => {
     event.preventDefault()
 
@@ -12,7 +12,7 @@ const AddBlogForm = ({addBlogListEntry}) => {
     //console.log(form)
     event.target.reset()
 
-    const newBlogData = {title: form.title, author: form.author, url: form.url}
+    const newBlogData = { title: form.title, author: form.author, url: form.url }
 
     addBlogListEntry(newBlogData)
 

@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
-import { useState } from "react"
+import { useState } from 'react'
 
 const Blog = ({ blog, handleLike, handleDelete, showDeleteButton }) => {
 
   const [visible, setVisible] = useState(false)
 
-  const hideWhenVisible = { display: visible ? 'none' : ''}
-  const showWhenVisible = { display: visible ? '' : 'none'}
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
   const toggleVisibility = () => {
     setVisible(!visible)
   }
@@ -23,7 +23,7 @@ const Blog = ({ blog, handleLike, handleDelete, showDeleteButton }) => {
   return (
     <div style={blogStyle}>
       <div>
-      {blog.author}: {blog.title}&nbsp;
+        {blog.author}: {blog.title}&nbsp;
         <button onClick={() => toggleVisibility()}>{visible ? 'Hide' : 'Show'}</button>
       </div>
       <div style={showWhenVisible}>
@@ -34,10 +34,10 @@ const Blog = ({ blog, handleLike, handleDelete, showDeleteButton }) => {
         <div>
           Added by: {blog.user.name}
         </div>
-        <div style={{display: showDeleteButton ? '' : 'none'}}>
+        <div style={{ display: showDeleteButton ? '' : 'none' }}>
           <button onClick={() => handleDelete(blog)}>Delete</button>
         </div>
-      </div> 
+      </div>
     </div>
   )
 }
