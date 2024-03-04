@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 const AddBlogForm = ({addBlogListEntry}) => {
   
   const newBlog = async (event) => {
@@ -25,6 +27,10 @@ const AddBlogForm = ({addBlogListEntry}) => {
       <button type="submit">Add Blog</button>
     </form>
   )
+}
+
+AddBlogForm.propTypes = {
+  addBlogListEntry: PropTypes.func.isRequired
 }
 
 export default AddBlogForm
