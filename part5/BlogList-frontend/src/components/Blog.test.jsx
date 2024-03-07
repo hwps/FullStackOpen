@@ -13,8 +13,8 @@ describe('<Blog />', () => {
             {
                 title: 'test_blog_title',
                 author: 'test_blog_author',
-                utl: 'test_blog_url',
-                likes: 0,
+                url: 'test_blog_url',
+                likes: 'test_blog_likes',
                 user: {
                     name: 'test_user_name',
                 }
@@ -28,36 +28,75 @@ describe('<Blog />', () => {
     test('By default the blog title and author are rendered', () => {
         
         // The elements containing the title and author should not be hidden
-        // However, display: none is not inherited, so if a parent element is hidden they will still not appear
         const titleElement = screen.getByText('test_blog_title', {exact: false})
         expect(titleElement).toBeDefined()
-        expect(titleElement).not.toHaveStyle('display: none')
-        
+        expect(titleElement).toBeVisible()
+
         const authorElement = screen.getByText('test_blog_author', {exact: false})
         expect(authorElement).toBeDefined()
-        expect(authorElement).not.toHaveStyle('display: none')
-        
-        // test that title and author elements are the same
-        //expect(titleElement).toBe(authorElement)
+        expect(authorElement).toBeVisible()
+
+        // likes, user name and url should be hidden
+        const userElement = screen.getByText('test_user_name', {exact: false})
+        expect(userElement).toBeDefined()
+        expect(userElement).not.toBeVisible()
+
+        const likesElement = screen.getByText('test_blog_likes', {exact: false})
+        expect(likesElement).toBeDefined()
+        expect(likesElement).not.toBeVisible()
+
+        const urlElement = screen.getByText('test_blog_url', {exact: false})
+        expect(urlElement).toBeDefined()
+        expect(urlElement).not.toBeVisible()
 
         // blogInfoBasic class should be visible
         const basicInfo = container.querySelector('.blogInfoBasic')
         expect(basicInfo).not.toHaveStyle('display: none')
+        expect(basicInfo).toBeVisible()
     
         // blogInfoExtended class should be hidden
         const extendedInfo = container.querySelector('.blogInfoExtended')
         expect(extendedInfo).toHaveStyle('display: none')
-    
+        expect(extendedInfo).not.toBeVisible()
+
     })
     
     test('Clicking the Show button shows extended blog info', async () => {
     
+        // click Show button
         const user = userEvent.setup()
         const button = screen.getByText('Show')
         await user.click(button)
+
+        // Everything should be visible
+        const titleElement = screen.getByText('test_blog_title', {exact: false})
+        expect(titleElement).toBeDefined()
+        expect(titleElement).toBeVisible()
+
+        const authorElement = screen.getByText('test_blog_author', {exact: false})
+        expect(authorElement).toBeDefined()
+        expect(authorElement).toBeVisible()
+
+        const userElement = screen.getByText('test_user_name', {exact: false})
+        expect(userElement).toBeDefined()
+        expect(userElement).toBeVisible()
+
+        const likesElement = screen.getByText('test_blog_likes', {exact: false})
+        expect(likesElement).toBeDefined()
+        expect(likesElement).toBeVisible()
+
+        const urlElement = screen.getByText('test_blog_url', {exact: false})
+        expect(urlElement).toBeDefined()
+        expect(urlElement).toBeVisible()
+
+        const basicInfo = container.querySelector('.blogInfoBasic')
+        expect(basicInfo).not.toHaveStyle('display: none')
+        expect(basicInfo).toBeVisible()
     
         const extendedInfo = container.querySelector('.blogInfoExtended')
         expect(extendedInfo).not.toHaveStyle('display: none')
+        expect(extendedInfo).toBeVisible()
+
     })
 
     test('Clicking the Like button twice calls likeButtonHandler twice', async () => {
