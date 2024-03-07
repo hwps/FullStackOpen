@@ -22,11 +22,11 @@ const Blog = ({ blog, handleLike, handleDelete, showDeleteButton }) => {
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div className='blogInfoBasic'>
         {blog.author}: {blog.title}&nbsp;
         <button onClick={() => toggleVisibility()}>{visible ? 'Hide' : 'Show'}</button>
       </div>
-      <div style={showWhenVisible}>
+      <div className='blogInfoExtended' style={showWhenVisible}>
         <a href={blog.url}>{blog.url}</a>
         <div>
           Likes: {blog.likes}&nbsp; <button onClick={() => handleLike(blog)}>Like</button>
