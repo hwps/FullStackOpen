@@ -6,6 +6,8 @@ describe('<Blog />', () => {
 
     let container
 
+    const mockLikeHandler = vi.fn() 
+
     beforeEach(() => {
         container = render(<Blog blog={
             {
@@ -17,7 +19,7 @@ describe('<Blog />', () => {
                     name: 'test_user_name',
                 }
             } }
-            handleLike={() => {}}
+            handleLike={mockLikeHandler}
             handleDelete={() => {}}
             showDeleteButton={true}
          />).container
@@ -46,7 +48,6 @@ describe('<Blog />', () => {
     })
     
     test('Clicking the Show button shows extended blog info', async () => {
-        const mockHandler = vi.fn()
     
         const user = userEvent.setup()
         const button = screen.getByText('Show')
@@ -54,7 +55,15 @@ describe('<Blog />', () => {
     
         const extendedInfo = container.querySelector('.blogInfoExtended')
         expect(extendedInfo).not.toHaveStyle('display: none')
+    })
 
+    test('Clicking the Like button twice calls likeButtonHandler twice', async () => {
+        const user = userEvent.setup()
+        const likeButton = screen.getByText('Like')
+        await user.click(likeButton)
+        await user.click(likeButton)
+
+        expect(mockLikeHandler.mock.calls).toHaveLength(2)
     })
 
 })
