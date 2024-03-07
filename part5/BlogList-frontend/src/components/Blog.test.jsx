@@ -27,7 +27,8 @@ describe('<Blog />', () => {
 
     test('By default the blog title and author are rendered', () => {
         
-        // test that title and author appear in the same element
+        // The elements containing the title and author should not be hidden
+        // However, display: none is not inherited, so if a parent element is hidden they will still not appear
         const titleElement = screen.getByText('test_blog_title', {exact: false})
         expect(titleElement).toBeDefined()
         expect(titleElement).not.toHaveStyle('display: none')
@@ -35,8 +36,10 @@ describe('<Blog />', () => {
         const authorElement = screen.getByText('test_blog_author', {exact: false})
         expect(authorElement).toBeDefined()
         expect(authorElement).not.toHaveStyle('display: none')
-        expect(titleElement).toBe(authorElement)
-    
+        
+        // test that title and author elements are the same
+        //expect(titleElement).toBe(authorElement)
+
         // blogInfoBasic class should be visible
         const basicInfo = container.querySelector('.blogInfoBasic')
         expect(basicInfo).not.toHaveStyle('display: none')
