@@ -269,12 +269,14 @@ describe('PUT requests (editing blogs in list', () => {
 
 		const initialData = await testdata.blogsInDB()
 		const id = initialData[0].id
+		const userId = initialData[0].user._id.toString()
 
 		const updatedData = {
 			title: initialData[0].title,
 			author: 'Test Author',
 			url: initialData[0].url,
-			likes: initialData[0].likes
+			likes: initialData[0].likes,
+			user: userId
 		}
 
 		await test_api
@@ -286,6 +288,7 @@ describe('PUT requests (editing blogs in list', () => {
 		const endResult = await testdata.blogsInDB()
 		expect(endResult).toHaveLength(testdata.blogCount)
 		expect(endResult[0].author).toContain(updatedData.author)
+		expect(endResult[0].user._id.toString()).toContain(userId)
 	})
 
 
