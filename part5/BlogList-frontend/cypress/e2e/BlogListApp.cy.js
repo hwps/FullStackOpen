@@ -87,7 +87,7 @@ describe('Blog List App', function() {
       cy.contains('Test Author').should('not.exist') // "Test Title" might still be shown in the notification
     })
 
-    it.only('...the delete button is shown only to the user who added the blog', function() {
+    it('...the delete button is shown only to the user who added the blog', function() {
       
       // add another user
       const anotherUser = {
@@ -119,7 +119,30 @@ describe('Blog List App', function() {
 
     })
 
-
+    it.only('Blogs are sorted according to likes', function() {
+      cy.contains('Add new blog').click()
+      
+      cy.get('#title').type('The title with the second most likes')
+      cy.get('#author').type('Test Author')
+      cy.get('#url').type('Test URL')
+      cy.get('#add-blog-button').click()
+      
+      cy.contains('Add new blog').click()
+      cy.get('#title').type('The title with the most likes')
+      cy.get('#author').type('Test Author')
+      cy.get('#url').type('Test URL')
+      cy.get('#add-blog-button').click()
+      
+      cy.get('.blogInfo').eq(1).should('contain', 'The title with the most likes')
+      cy.wait(2000)
+      cy.get('.blogInfo').eq(1).within( () => {
+        cy.get('#show-blogInfoExtended').click()
+        cy.get('#blogLikeButton').click()
+      })
+      
+      cy.get('.blogInfo').eq(0).should('contain', 'The title with the most likes')
+      cy.get('.blogInfo').eq(1).should('contain', 'The title with the second most likes')
+    })
 
   })
 })
