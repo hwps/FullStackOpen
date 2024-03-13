@@ -30,7 +30,7 @@ const Notification = ({ message, type }) => {
 
   if (message === null) { return null }
   return (
-    <div style={styles[type]}>
+    <div id="notification" style={styles[type]}>
       {message}
     </div>
   )
@@ -152,17 +152,17 @@ const App = () => {
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>Username:
-          <input type="text" name="username" onChange={({ target }) => {
+          <input type="text" id="username" name="username" onChange={({ target }) => {
             /* setUsername(target.value)*/ }}
           />
         </div>
 
         <div>Password:
-          <input type="password" name="password" onChange={({ target }) => {
+          <input type="password" id="password" name="password" onChange={({ target }) => {
             /* setPassword(target.value)*/ }}
           />
         </div>
-        <button type="submit">Login</button>
+        <button id="login-button" type="submit">Login</button>
       </form>
     </div>
   )

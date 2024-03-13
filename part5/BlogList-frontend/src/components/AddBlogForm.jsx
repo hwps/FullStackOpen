@@ -21,10 +21,10 @@ const AddBlogForm = ({ addBlogListEntry }) => {
 
   return (
     <form onSubmit={newBlog}>
-      <div>Title: <input type="text" name="title"/></div>
-      <div>Author: <input type="text" name="author"/></div>
-      <div>URL: <input type="text" name="url"/></div>
-      <button type="submit">Add Blog</button>
+      <div>Title: <input type="text" id="title" name="title"/></div>
+      <div>Author: <input type="text" id="author" name="author"/></div>
+      <div>URL: <input type="text" id="url" name="url"/></div>
+      <button id="add-blog-button" type="submit">Add Blog</button>
     </form>
   )
 }
