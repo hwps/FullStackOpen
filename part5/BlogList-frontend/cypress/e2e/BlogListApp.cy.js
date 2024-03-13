@@ -73,7 +73,7 @@ describe('Blog List App', function() {
       cy.get('.blogInfoExtended').contains('Likes: 1')
     })
 
-    it.only('...a blog can be deleted', function() {
+    it('...a blog can be deleted', function() {
       cy.contains('Add new blog').click()
 
       cy.get('#title').type('Test Title')
@@ -84,7 +84,39 @@ describe('Blog List App', function() {
       cy.get('#show-blogInfoExtended').click()
       cy.get('#blogDeleteButton').click()
 
-      cy.contains('Test Title').should('not.exist')
+      cy.contains('Test Author').should('not.exist') // "Test Title" might still be shown in the notification
+    })
+
+    it.only('...the delete button is shown only to the user who added the blog', function() {
+      
+      // add another user
+      const anotherUser = {
+        "username": "another",
+        "name": "Another User",
+        "password": "test"
+      }
+      cy.request('POST', 'http://localhost:3001/api/users/', anotherUser)
+
+
+      // add blog post and log out
+      cy.contains('Add new blog').click()
+
+      cy.get('#title').type('Test Title')
+      cy.get('#author').type('Test Author')
+      cy.get('#url').type('Test URL')
+      cy.get('#add-blog-button').click()
+
+      cy.contains('Log out').click()
+
+      // log in as another user
+      cy.get('#username').type('another')
+      cy.get('#password').type('test')
+      cy.get('#login-button').click()
+
+      // delete button should not be visible
+      cy.get('#show-blogInfoExtended').click()
+      cy.get('#blogDeleteButton').should('not.be.visible')
+
     })
 
 
