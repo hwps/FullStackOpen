@@ -114,7 +114,7 @@ const App = () => {
     try {
       const addedBlog = await blogService.postNew( newBlogData )
 
-      addedBlog.user = { name: user.name }
+      addedBlog.user = { name: user.name, username: user.username }
       setBlogs(blogs.concat(addedBlog))
       displayNotification(`Added ${addedBlog.title} to blog list`, 'info')
       blogFormRef.current.toggleVisibility()

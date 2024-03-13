@@ -59,7 +59,7 @@ describe('Blog List App', function() {
     })
 
     
-    it.only('...a blog can be liked', function() {
+    it('...a blog can be liked', function() {
       cy.contains('Add new blog').click()
 
       cy.get('#title').type('Test Title')
@@ -71,6 +71,20 @@ describe('Blog List App', function() {
       cy.get('.blogInfoExtended').contains('Likes: 0')
       cy.get('#blogLikeButton').click()
       cy.get('.blogInfoExtended').contains('Likes: 1')
+    })
+
+    it.only('...a blog can be deleted', function() {
+      cy.contains('Add new blog').click()
+
+      cy.get('#title').type('Test Title')
+      cy.get('#author').type('Test Author')
+      cy.get('#url').type('Test URL')
+      cy.get('#add-blog-button').click()
+
+      cy.get('#show-blogInfoExtended').click()
+      cy.get('#blogDeleteButton').click()
+
+      cy.contains('Test Title').should('not.exist')
     })
 
 
