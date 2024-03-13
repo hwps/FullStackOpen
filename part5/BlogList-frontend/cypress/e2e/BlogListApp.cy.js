@@ -57,5 +57,23 @@ describe('Blog List App', function() {
       cy.get('.blogInfo').contains('Test Title')
       cy.get('.blogInfo').contains('Test Author')
     })
+
+    
+    it.only('...a blog can be liked', function() {
+      cy.contains('Add new blog').click()
+
+      cy.get('#title').type('Test Title')
+      cy.get('#author').type('Test Author')
+      cy.get('#url').type('Test URL')
+      cy.get('#add-blog-button').click()
+
+      cy.get('#show-blogInfoExtended').click()
+      cy.get('.blogInfoExtended').contains('Likes: 0')
+      cy.get('#blogLikeButton').click()
+      cy.get('.blogInfoExtended').contains('Likes: 1')
+    })
+
+
+
   })
 })

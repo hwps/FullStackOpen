@@ -24,18 +24,18 @@ const Blog = ({ blog, handleLike, handleDelete, showDeleteButton }) => {
     <div style={blogStyle} className='blogInfo'>
       <div className='blogInfoBasic'>
         {blog.author}: {blog.title}&nbsp;
-        <button onClick={() => toggleVisibility()}>{visible ? 'Hide' : 'Show'}</button>
+        <button id="show-blogInfoExtended" onClick={() => toggleVisibility()}>{visible ? 'Hide' : 'Show'}</button>
       </div>
       <div className='blogInfoExtended' style={showWhenVisible}>
         <a href={blog.url}>{blog.url}</a>
-        <div>
-          Likes: {blog.likes}&nbsp; <button onClick={() => handleLike(blog)}>Like</button>
+        <div id="blogLikes">
+          Likes: {blog.likes}&nbsp; <button id="blogLikeButton" onClick={() => handleLike(blog)}>Like</button>
         </div>
         <div>
           Added by: {blog.user.name}
         </div>
         <div style={{ display: showDeleteButton ? '' : 'none' }}>
-          <button onClick={() => handleDelete(blog)}>Delete</button>
+          <button id="blogDeleteButton" onClick={() => handleDelete(blog)}>Delete</button>
         </div>
       </div>
     </div>
