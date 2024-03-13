@@ -134,7 +134,6 @@ describe('Blog List App', function() {
       cy.get('#add-blog-button').click()
       
       cy.get('.blogInfo').eq(1).should('contain', 'The title with the most likes')
-      cy.wait(2000)
       cy.get('.blogInfo').eq(1).within( () => {
         cy.get('#show-blogInfoExtended').click()
         cy.get('#blogLikeButton').click()
