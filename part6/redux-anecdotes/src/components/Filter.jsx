@@ -1,4 +1,5 @@
 import { setFilter } from "../reducers/filterReducer"
+import { setNotification } from "../reducers/notificationReducer"
 import { useDispatch } from "react-redux"
 
 const Filter = () => {

@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { upvoteAnecdote } from "../reducers/anecdoteReducer"
+import { setNotification, clearNotification } from "../reducers/notificationReducer"
 
 const AnecdoteList = () => {
     // fetch anecdotes from store matching filter
@@ -23,6 +24,8 @@ const AnecdoteList = () => {
     const handleUpvote = (id) => {
         console.log('vote', id)
         dispatch(upvoteAnecdote(id))
+        dispatch(setNotification('You upvoted ' + anecdotes.find(a => a.id === id).content))
+        setTimeout(() => dispatch(clearNotification()), 5000)
     }
         
     return (      
