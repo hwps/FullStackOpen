@@ -3,7 +3,7 @@ import { upvoteAnecdote } from "../reducers/anecdoteReducer"
 
 const AnecdoteList = () => {
     // fetch anecdotes from store matching filter
-    const anecdotes = useSelector(state => {
+    const unsortedAnecdotes = useSelector(state => {
         if (!state.filter) 
             return state.anecdotes
         else {
@@ -12,10 +12,12 @@ const AnecdoteList = () => {
     })
     
     // sort according to likes
-    anecdotes.sort((a, b) => {
+
+    const anecdotes = unsortedAnecdotes.toSorted((a, b) => {
         if (a.votes === b.votes) return 0
         else return a.votes > b.votes ? -1 : 1
     })
+
     const dispatch = useDispatch()
 
     const handleUpvote = (id) => {
